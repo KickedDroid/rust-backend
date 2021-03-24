@@ -1,12 +1,34 @@
-#![feature(proc_macro_hygiene, decl_macro)]
+#![feature(decl_macro, proc_macro_hygiene)]
 
-#[macro_use] extern crate rocket;
+extern crate rocket;
+extern crate reqwest;
+
+use rocket::http::RawStr;
+use rocket::*;
+
+use std::time::Duration;
+use reqwest::blocking::ClientBuilder;
 
 #[get("/")]
 fn index() -> &'static str {
-    "Hello, Aidan!"
+    "Navigate to http://localhost:8000/check/<GitHub username>"
+}
+
+#[get("/check/<user>")]
+fn check(user: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
+    let request_url = format!("https://api.github.com/users/{}", user);
+    
+    let timeout = Duration::new(5, 0);
+    let client = ClientBuilder::new().timeout(timeout).build()?;
+    let response = client.head(&request_url).send()?;
+
+    if response.status().is_success() {
+        Ok(format!("{} is a user!", user))
+    } else {
+        Ok(format!("{} is not a user!", user))
+    }
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite().mount("/", routes![index, check]).launch();
 }
