@@ -29,6 +29,11 @@ fn check(user: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
     }
 }
 
+#[post("/api/withdrawl/<address>")]
+fn withdrawl(address: $RawStr) -> Result<String, Box<dyn std::error::Error>> {
+    format!("Your Bitcoin will arrive soon at {}", address)
+}
+
 fn main() {
     rocket::ignite().mount("/", routes![index, check]).launch();
 }
