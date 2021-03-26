@@ -35,5 +35,5 @@ fn withdrawl(address: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index, check]).launch();
+    rocket::ignite().mount("/", routes![index, check, withdrawl]).launch();
 }
