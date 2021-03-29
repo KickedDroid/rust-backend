@@ -31,8 +31,21 @@ fn check(user: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
 
 #[post("/api/withdrawl/<address>/<amount>")]
 fn withdrawl(address: &RawStr, amount: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
+    let request_url = format!("https://api.aquanow.io/accounts/v1/transaction");
     let parsed_amount = amount.parse::<f32>().unwrap();
-    Ok(format!("You will recieve {} soon at {}",parsed_amount, address))
+    let timeout = Duration::new(5, 0);
+    let client = ClientBuilder::new().timeout(timeout).build()?;
+    
+    let res = client.post(request_url)
+        .body("").send()?;
+
+    if res.status().is_success() {
+        Ok(format!("Succes"))
+    } else {
+        Ok(format!("Error"))
+    }
+
+    //Ok(format!("You will recieve {} soon at {}",parsed_amount, address,))
 }
 
 fn main() {
