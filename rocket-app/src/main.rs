@@ -29,9 +29,10 @@ fn check(user: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
     }
 }
 
-#[post("/api/withdrawl/<address>")]
-fn withdrawl(address: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
-    Ok(format!("Your Bitcoin will arrive soon at {}", address))
+#[post("/api/withdrawl/<address>/<amount>")]
+fn withdrawl(address: &RawStr, amount: &RawStr) -> Result<String, Box<dyn std::error::Error>> {
+    let parsed_amount = amount.parse::<f32>().unwrap()
+    Ok(format!("You will recieve {} soon at {}",parsed_amount, address))
 }
 
 fn main() {
