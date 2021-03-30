@@ -37,7 +37,11 @@ fn withdrawl(address: &RawStr, amount: &RawStr) -> Result<String, Box<dyn std::e
     let client = ClientBuilder::new().timeout(timeout).build()?;
     
     let res = client.post(request_url)
-        .body("").send()?;
+        .body("")
+        .header("x-api-key", "")
+        .header("x-signature", "")
+        .header("x-nonce", "")
+        .send()?;
 
     if res.status().is_success() {
         Ok(format!("Succes"))
