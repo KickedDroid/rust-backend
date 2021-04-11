@@ -9,6 +9,8 @@ use rocket::*;
 use std::time::Duration;
 use reqwest::blocking::ClientBuilder;
 use sha3::{Digest, Sha3_384};
+use chrono::prelude::*;
+use hex_literal::hex;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -38,15 +40,17 @@ fn withdrawl(address: &RawStr, amount: &RawStr) -> Result<String, Box<dyn std::e
     let client = ClientBuilder::new().timeout(timeout).build()?;
     let api_key = "";
 
+    let utc: DateTime<Utc> = Utc::now();
+
     // hash the api key 
     let mut hasher = Sha3_384::new();
     hasher.update(api_key);
-    let _sig = hasher.finalize();
+    let _sig: String = format!("{:X}",hasher.finalize());
     let res = client.post(request_url)
         .body("")
-        .header("x-api-key", "")
-        .header("x-signature", "")
-        .header("x-nonce", "")
+        .header("x-api-key", api_key)
+        .header("x-signature", _sig)
+        .header("x-nonce", utc.to_string())
         .send()?;
 
     if res.status().is_success() {
